@@ -48,6 +48,11 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
+            
+        if kk_rct.colliderect(bd_rct): #5:こうかとんと爆弾がぶつかったらreturn、colliderect()はぶつかったらTrue
+            print("GameOver")
+            return
+
         screen.blit(bg_img,[0,0])
 
         """こうかとん"""
