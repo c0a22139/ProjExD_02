@@ -28,12 +28,24 @@ def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
-    
+    """こうかとん"""
     kk_img = pg.image.load("ex02/fig/3.png")
+    kk_img_r = pg.transform.flip(kk_img, True, False) #反転こうかとん
+    kk_delta = {
+        pg.transform.rotozoom(kk_img_r, 60, 2.0): [0, -5],
+        pg.transform.rotozoom(kk_img_r, 30, 2.0): [5, -5],
+        pg.transform.rotozoom(kk_img_r, 0, 2.0): [5, 0],
+        pg.transform.rotozoom(kk_img_r, 330, 2.0): [5, 5],
+        pg.transform.rotozoom(kk_img_r, 300, 2.0): [0, 5],
+        pg.transform.rotozoom(kk_img, 30, 2.0): [-5, 5],
+        pg.transform.rotozoom(kk_img, 0, 2.0): [-5, 0],
+        pg.transform.rotozoom(kk_img, 330, 2.0): [-5, -5]
+    }
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    
     kk_rct = kk_img.get_rect()
     kk_rct.center = [900, 400]
-
+    """爆弾"""
     bd_img = pg.Surface((20, 20))
     bd_img.set_colorkey((0, 0, 0))#1:黒い余白を透明にする
     pg.draw.circle(bd_img, (255, 0, 0), (10, 10), 10)
@@ -41,6 +53,7 @@ def main():
     x, y = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     bd_rct.center = (x, y)
     vx, vy = +5, +5
+    kk_t = kk_img
 
     clock = pg.time.Clock()
     tmr = 0
@@ -65,7 +78,15 @@ def main():
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (True, True): #4:こうかとんが壁にぶつかったときの処理
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        screen.blit(kk_img, kk_rct)
+        for kk in kk_delta.items():
+            if sum_mv == kk[1]:
+                #kk_t = kk[0]
+                screen.blit(kk[0], kk_rct)
+                kk_t = kk[0]
+        if sum_mv == [0, 0]:
+            screen.blit(kk_t, kk_rct)
+        #screen.blit(kk_t, kk_rct)
+        #screen.blit(kk_img, kk_rct)
 
         """爆弾"""
         bd_rct.move_ip(vx, vy)
