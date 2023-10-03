@@ -70,7 +70,7 @@ def main():
                 return
             
         if kk_rct.colliderect(bd_rct): #5:こうかとんと爆弾がぶつかったらreturn、colliderect()はぶつかったらTrue
-            print("GameOver")
+            #print("GameOver")
             go = True
 
         screen.blit(bg_img,[0,0])
@@ -114,6 +114,7 @@ def main():
             tmr_go += 1
             vx, vy = 0, 0
         if tmr_go >= 250:
+            print("GameOver")
             return
 
 
