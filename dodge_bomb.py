@@ -17,6 +17,7 @@ def main():
     bd_rect = bd_img.get_rect() #1:SurfaceからRectを抽出
     x, y = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     bd_rect.center = (x, y)
+    vx, vy = +5, +5
 
     clock = pg.time.Clock()
     tmr = 0
@@ -27,10 +28,11 @@ def main():
 
         screen.blit(bg_img, [0, 0])
         screen.blit(kk_img, [900, 400])
+        bd_rect.move_ip(vx, vy)
         screen.blit(bd_img, bd_rect) #1:動かす場合はimg_rect
         pg.display.update()
         tmr += 1
-        clock.tick(10)
+        clock.tick(50)
 
 
 if __name__ == "__main__":
