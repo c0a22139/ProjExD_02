@@ -11,6 +11,18 @@ delta = {
     pg.K_RIGHT: (+5, 0)
 }
 
+def check_bound(obj_rct: pg.Rect):
+    """
+    引数:こうかとんRectか、ばくだんRect
+    戻り値:横方向・縦方向の真理値タプル（True:画面内/False:画面外）
+    """
+    yoko, tate = True, True
+    if obj_rct.left < 0 or WIDTH < obj_rct.right:
+        yoko = False
+    if obj_rct.top < 0 or HEIGHT < obj_rct.bottom:
+        tate = False
+    return yoko, tate
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -38,6 +50,7 @@ def main():
                 return
         screen.blit(bg_img,[0,0])
 
+        """こうかとん"""
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for key, mv in delta.items():
@@ -45,9 +58,17 @@ def main():
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1] 
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
+        if check_bound(kk_rct) != (True, True): #4:こうかとんが壁にぶつかったときの処理
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
 
+        """爆弾"""
         bd_rct.move_ip(vx, vy)
+        yoko, tate = check_bound(bd_rct)
+        if not yoko: #4:横方向にはみ出た場合（False）
+            vx *= -1
+        if not tate: #4:縦方向にはみ出た場合（False）
+            vy *= -1
         screen.blit(bd_img, bd_rct) #1:動かす場合はimg_rect
         pg.display.update()
         tmr += 1
