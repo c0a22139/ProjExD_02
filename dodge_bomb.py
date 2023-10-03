@@ -31,6 +31,7 @@ def main():
     """こうかとん"""
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img_r = pg.transform.flip(kk_img, True, False) #反転こうかとん
+    """こうかとん・各方向"""
     kk_delta = {
         pg.transform.rotozoom(kk_img_r, 60, 2.0): [0, -5],
         pg.transform.rotozoom(kk_img_r, 30, 2.0): [5, -5],
@@ -42,6 +43,7 @@ def main():
         pg.transform.rotozoom(kk_img, 330, 2.0): [-5, -5]
     }
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    kk_t = kk_img #初期こうかとん、直前の入力に対応したこうかとんの保持
     
     kk_rct = kk_img.get_rect()
     kk_rct.center = [900, 400]
@@ -53,7 +55,8 @@ def main():
     x, y = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     bd_rct.center = (x, y)
     vx, vy = +5, +5
-    kk_t = kk_img
+    accs = [a for a in range(1, 11)] #加速
+    avx, avy = vx, vy #加速初期値
 
     clock = pg.time.Clock()
     tmr = 0
@@ -78,26 +81,27 @@ def main():
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (True, True): #4:こうかとんが壁にぶつかったときの処理
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        for kk in kk_delta.items():
+        for kk in kk_delta.items(): #各こうかとんのsum_mvと比較
             if sum_mv == kk[1]:
-                #kk_t = kk[0]
                 screen.blit(kk[0], kk_rct)
                 kk_t = kk[0]
         if sum_mv == [0, 0]:
-            screen.blit(kk_t, kk_rct)
-        #screen.blit(kk_t, kk_rct)
-        #screen.blit(kk_img, kk_rct)
+            screen.blit(kk_t, kk_rct) #入力されていない時
 
         """爆弾"""
-        bd_rct.move_ip(vx, vy)
+        bd_rct.move_ip(avx, avy)
         yoko, tate = check_bound(bd_rct)
         if not yoko: #4:横方向にはみ出た場合（False）
             vx *= -1
         if not tate: #4:縦方向にはみ出た場合（False）
             vy *= -1
-        screen.blit(bd_img, bd_rct) #1:動かす場合はimg_rect
+        screen.blit(bd_img, bd_rct)
+
+        """その他"""
         pg.display.update()
         tmr += 1
+        avx, avy = vx*accs[min(tmr//500,9)], vy*accs[min(tmr//500,9)] #加速
+        
         clock.tick(50)
 
 
