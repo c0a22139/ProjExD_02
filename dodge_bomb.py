@@ -109,8 +109,9 @@ def main():
         
         clock.tick(50)
         if go:
-            screen.blit(kk_img_go, kk_rct)
             kk_t = kk_img_go
+            screen.blit(kk_img_go, kk_rct)
+            #kk_t = kk_img_go
             tmr_go += 1
             vx, vy = 0, 0
         if tmr_go >= 250:
