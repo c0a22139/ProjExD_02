@@ -28,9 +28,13 @@ def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
+    go = False
     """こうかとん"""
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img_r = pg.transform.flip(kk_img, True, False) #反転こうかとん
+    kk_img_go = pg.image.load("ex02/fig/8.png")
+    kk_img_go = pg.transform.rotozoom(kk_img_go, 0, 2.5)
+    tmr_go = 0
     """こうかとん・各方向"""
     kk_delta = {
         pg.transform.rotozoom(kk_img_r, 60, 2.0): [0, -5],
@@ -67,26 +71,27 @@ def main():
             
         if kk_rct.colliderect(bd_rct): #5:こうかとんと爆弾がぶつかったらreturn、colliderect()はぶつかったらTrue
             print("GameOver")
-            return
+            go = True
 
         screen.blit(bg_img,[0,0])
 
         """こうかとん"""
-        key_lst = pg.key.get_pressed()
-        sum_mv = [0, 0]
-        for key, mv in delta.items():
-            if key_lst[key]:
-                sum_mv[0] += mv[0]
-                sum_mv[1] += mv[1] 
-        kk_rct.move_ip(sum_mv[0], sum_mv[1])
-        if check_bound(kk_rct) != (True, True): #4:こうかとんが壁にぶつかったときの処理
-            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        for kk in kk_delta.items(): #各こうかとんのsum_mvと比較
-            if sum_mv == kk[1]:
-                screen.blit(kk[0], kk_rct)
-                kk_t = kk[0]
-        if sum_mv == [0, 0]:
-            screen.blit(kk_t, kk_rct) #入力されていない時
+        if not go:
+            key_lst = pg.key.get_pressed()
+            sum_mv = [0, 0]
+            for key, mv in delta.items():
+                if key_lst[key]:
+                    sum_mv[0] += mv[0]
+                    sum_mv[1] += mv[1] 
+            kk_rct.move_ip(sum_mv[0], sum_mv[1])
+            if check_bound(kk_rct) != (True, True): #4:こうかとんが壁にぶつかったときの処理
+                kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+            for kk in kk_delta.items(): #各こうかとんのsum_mvと比較
+                if sum_mv == kk[1]:
+                    screen.blit(kk[0], kk_rct)
+                    kk_t = kk[0]
+            if sum_mv == [0, 0]:
+                screen.blit(kk_t, kk_rct) #入力されていない時
 
         """爆弾"""
         bd_rct.move_ip(avx, avy)
@@ -103,6 +108,15 @@ def main():
         avx, avy = vx*accs[min(tmr//500,9)], vy*accs[min(tmr//500,9)] #加速
         
         clock.tick(50)
+        if go:
+            screen.blit(kk_img_go, kk_rct)
+            kk_t = kk_img_go
+            tmr_go += 1
+            vx, vy = 0, 0
+        if tmr_go >= 250:
+            return
+
+
 
 
 if __name__ == "__main__":
